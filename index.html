@@ -119,7 +119,7 @@
 
         .timeline-item.active-now {
             animation: glowing 2s infinite;
-            border-left: 5px solid #FF4500 !important; /* Redder orange */
+            border-left: 5px solid #FF4500 !important;
             transform: scale(1.02);
         }
 
@@ -150,18 +150,29 @@
             margin-bottom: 5px;
         }
 
+        /* Modified Header Row for Right Alignment */
         .header-row {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 5px;
-            flex-wrap: wrap;
+            align-items: center; /* 垂直置中 */
+            flex-wrap: wrap;     /* 允許換行 */
             gap: 10px;
+            margin-bottom: 5px;
         }
 
-        .title { font-size: 1.1rem; font-weight: bold; color: #333; flex: 1; min-width: 200px; }
+        .title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            /* 讓標題不要吃掉全部空間，但在同一行時盡量撐開 */
+            margin-right: 5px; 
+        }
 
-        .btn-group { display: flex; gap: 5px; }
+        .btn-group {
+            display: flex;
+            gap: 5px;
+            /* 關鍵：強制靠右 (即使換行也會靠右) */
+            margin-left: auto; 
+        }
 
         .nav-btn {
             text-decoration: none;
@@ -193,14 +204,22 @@
         .timeline-item:hover .details {
             max-height: 600px; opacity: 1; margin-top: 10px; padding: 10px; border: 1px solid #eee;
         }
-        .timeline-item.active-now .details {
-             /* When active, always show details slightly? Optional, currently keeping closed unless hover */
-        }
 
         .info-row { font-size: 0.9rem; margin-bottom: 6px; line-height: 1.5; display: flex; }
         .info-label { min-width: 60px; font-weight: bold; color: var(--jeju-orange); }
         .info-content { flex: 1; }
-        .route-info { background-color: #E8F5E9; color: #2E7D32; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 8px; display: inline-block; width: 100%; box-sizing: border-box; }
+        
+        .route-info { 
+            background-color: #E8F5E9; 
+            color: #2E7D32; 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            font-size: 0.85rem; 
+            margin-bottom: 8px; 
+            display: inline-block; 
+            width: 100%; 
+            box-sizing: border-box; 
+        }
 
         #day1 .timeline-item { border-left-color: #78909C; }
         #day2 .timeline-item { border-left-color: var(--ocean-blue); }
@@ -213,7 +232,7 @@
 
 <div class="container">
     <header>
-        <h1>🍊 王貝卡濟州島春季獨旅</h1>
+        <h1>🍊 濟州島春季獨旅</h1>
         <div class="subtitle">3/23 (一) - 3/27 (五) | 點擊卡片查看路線</div>
     </header>
 
@@ -235,7 +254,7 @@
                 <div class="btn-group"><a href="https://map.naver.com/p/search/제주국제공항" target="_blank" class="nav-btn primary">📍 目的地</a></div>
             </div>
             <div class="tags"><span class="tag spot">抵達</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">行程：</span><span class="info-content">搭乘 台灣虎航 抵達，出關後搭計程車。</span></div></div>
+            <div class="details"><div class="info-row"><span class="info-label">行程：</span><span class="info-content">台灣虎航抵達，出關後搭計程車。</span></div></div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-23" data-start="19:40" data-end="20:30">
@@ -249,7 +268,7 @@
             </div>
             <div class="tags"><span class="tag spot">住宿</span></div>
             <div class="details">
-                <div class="route-info">🚩 起點：濟州國際機場</div>
+                <div class="route-info">🚩 起點：濟州機場 (計程車/公車)</div>
                 <div class="info-row"><span class="info-label">地點：</span><span class="info-content">濟州機場民宿 Yes Jun</span></div>
             </div>
         </div>
@@ -265,7 +284,7 @@
             </div>
             <div class="tags"><span class="tag food">必吃</span></div>
             <div class="details">
-                <div class="route-info">🚩 起點：民宿 Yes Jun</div>
+                <div class="route-info">🚩 起點：民宿 (計程車/公車)</div>
                 <div class="info-row"><span class="info-label">推薦：</span><span class="info-content">88豬 - 黑豬肉定食 / 湯飯。</span></div>
             </div>
         </div>
@@ -275,7 +294,7 @@
             <div class="header-row"><span class="title">市區散步</span></div>
             <div class="tags"><span class="tag spot">放鬆</span></div>
             <div class="details">
-                <div class="route-info">🚩 起點：連洞商圈</div>
+                <div class="route-info">🚩 起點：連洞商圈 (步行)</div>
                 <div class="info-row"><span class="info-label">活動：</span><span class="info-content">逛便利商店、買香蕉牛奶。</span></div>
             </div>
         </div>
@@ -301,8 +320,9 @@
             </div>
             <div class="tags"><span class="tag spot">海景</span></div>
             <div class="details">
-                <div class="route-info">🚩 起點：民宿 Yes Jun (202號公車)</div>
+                <div class="route-info">🚩 起點：民宿 (搭202號公車)</div>
                 <div class="info-row"><span class="info-label">重點：</span><span class="info-content">絕美海景散步路，免費。</span></div>
+                <div class="info-row"><span class="info-label">交通：</span><span class="info-content">公車往西向行駛。</span></div>
             </div>
         </div>
 
@@ -316,7 +336,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag food">韓屋</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">特色：</span><span class="info-content">韓屋風格海景咖啡。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：步道旁 (步行)</div>
+                <div class="info-row"><span class="info-label">特色：</span><span class="info-content">韓屋風格海景咖啡。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-24" data-start="12:30" data-end="14:00">
@@ -329,7 +352,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag food">必吃</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">必吃：</span><span class="info-content">海鮮拉麵 (螃蟹/淡菜)。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：Haejigae (步行)</div>
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">海鮮拉麵 (螃蟹/淡菜)。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-24" data-start="14:00" data-end="16:00">
@@ -342,7 +368,11 @@
                 </div>
             </div>
             <div class="tags"><span class="tag food">甜點</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">必吃：</span><span class="info-content">蛋塔、玉米塔 (13:00開)。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：Nolman (搭202號公車)</div>
+                <div class="info-row"><span class="info-label">交通：</span><span class="info-content">搭乘 202號 往翰林方向。</span></div>
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">蛋塔、玉米塔 (13:00開)。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-24" data-start="16:00" data-end="17:30">
@@ -355,7 +385,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag food">指定</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">必吃：</span><span class="info-content">土耳其奶油 (Kaymak)。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：翰林邑 (步行/短程)</div>
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">土耳其奶油 (Kaymak)。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-24" data-start="17:30" data-end="18:30">
@@ -368,7 +401,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag spot">夕陽</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">活動：</span><span class="info-content">欣賞飛揚島景色與夕陽。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：Siso 附近 (步行)</div>
+                <div class="info-row"><span class="info-label">活動：</span><span class="info-content">欣賞飛揚島景色與夕陽。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-24" data-start="18:30" data-end="20:00">
@@ -381,7 +417,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag food">必吃</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">必吃：</span><span class="info-content">炸豬排烏龍麵、鮑魚拌飯。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：海水浴場 (步行)</div>
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">炸豬排烏龍麵、鮑魚拌飯。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-24" data-start="20:00" data-end="21:30">
@@ -412,7 +451,7 @@
             </div>
             <div class="tags"><span class="tag spot">咖啡</span></div>
             <div class="details">
-                <div class="route-info">🚩 起點：民宿 Yes Jun (181/182巴士)</div>
+                <div class="route-info">🚩 起點：民宿 (搭181/182號巴士)</div>
                 <div class="info-row"><span class="info-label">特色：</span><span class="info-content">復古橘子倉庫咖啡廳。</span></div>
             </div>
         </div>
@@ -427,7 +466,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag food">小吃</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">必吃：</span><span class="info-content">橘子大福、黑豬肉可樂餅。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：橘花閣樓 (轉公車/計程車)</div>
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">橘子大福、黑豬肉可樂餅。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-25" data-start="14:30" data-end="16:00">
@@ -440,7 +482,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag spot">歷史</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">活動：</span><span class="info-content">參觀畫家避難茅草屋。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：市場 (步行可達)</div>
+                <div class="info-row"><span class="info-label">活動：</span><span class="info-content">參觀畫家避難茅草屋。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-25" data-start="16:00" data-end="18:00">
@@ -453,7 +498,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag spot">自然</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">重點：</span><span class="info-content">亞洲唯一直接入海的瀑布。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：文化街 (步行)</div>
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">亞洲唯一直接入海的瀑布。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-25" data-start="18:00" data-end="20:00">
@@ -466,7 +514,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag food">獨食</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">必吃：</span><span class="info-content">鮑魚海鮮砂鍋。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：瀑布 (步行/短程)</div>
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">鮑魚海鮮砂鍋。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-25" data-start="20:00" data-end="22:00">
@@ -497,7 +548,8 @@
             </div>
             <div class="tags"><span class="tag spot">櫻花</span></div>
             <div class="details">
-                <div class="route-info">🚩 起點：民宿 Yes Jun</div>
+                <div class="route-info">🚩 起點：民宿 (公車+計程車)</div>
+                <div class="info-row"><span class="info-label">交通：</span><span class="info-content">公車到加時里後，轉計程車進去。</span></div>
                 <div class="info-row"><span class="info-label">重點：</span><span class="info-content">櫻花 + 油菜花隧道。</span></div>
             </div>
         </div>
@@ -512,7 +564,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag food">必吃</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">必吃：</span><span class="info-content">濟州式辣炒豬肉。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：鹿山路 (步行/村莊內)</div>
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">濟州式辣炒豬肉。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-26" data-start="14:30" data-end="16:30">
@@ -525,7 +580,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag spot">歷史</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">重點：</span><span class="info-content">古代茅草屋村落。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：加時里 (公車/計程車)</div>
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">古代茅草屋村落。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-26" data-start="16:30" data-end="19:00">
@@ -538,7 +596,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag spot">自然</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">重點：</span><span class="info-content">海岸懸崖、油菜花田。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：民俗村 (計程車建議)</div>
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">海岸懸崖、油菜花田。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-26" data-start="19:00" data-end="21:00">
@@ -551,7 +612,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag food">夜市</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">必吃：</span><span class="info-content">鮑魚紫菜飯捲、烤龍蝦。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：涉地可支 (返回濟州市區)</div>
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">鮑魚紫菜飯捲、烤龍蝦。</span></div>
+            </div>
         </div>
     </div>
 
@@ -568,7 +632,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag spot">賞櫻</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">重點：</span><span class="info-content">神話發源地，古蹟與櫻花。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：民宿 (計程車/公車)</div>
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">神話發源地，古蹟與櫻花。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-27" data-start="11:00" data-end="12:30">
@@ -581,7 +648,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag spot">賞櫻</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">重點：</span><span class="info-content">市區著名賞櫻路。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：三姓穴 (步行)</div>
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">市區著名賞櫻路。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-27" data-start="12:30" data-end="14:00">
@@ -594,7 +664,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag food">必吃</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">必吃：</span><span class="info-content">豬肉湯麵。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：櫻花大道 (步行/麵條街)</div>
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">豬肉湯麵。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-27" data-start="14:00" data-end="15:30">
@@ -607,7 +680,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag spot">地標</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">重點：</span><span class="info-content">海岸地標。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：姊妹麵條 (步行或短程計程車)</div>
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">海岸地標。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-27" data-start="15:30" data-end="16:30">
@@ -620,7 +696,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag spot">打卡</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">重點：</span><span class="info-content">彩虹石墩 + 飛機。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：龍頭岩 (計程車建議)</div>
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">彩虹石墩 + 飛機。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-27" data-start="16:30" data-end="18:00">
@@ -633,7 +712,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag spot">地標</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">重點：</span><span class="info-content">紅/白馬型燈塔。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：彩虹道路 (步行在旁)</div>
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">紅/白馬型燈塔。</span></div>
+            </div>
         </div>
 
         <div class="timeline-item" data-date="2026-03-27" data-start="18:00" data-end="23:00">
@@ -646,7 +728,10 @@
                 </div>
             </div>
             <div class="tags"><span class="tag spot">回程</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">航班：</span><span class="info-content">虎航 20:15 起飛。</span></div></div>
+            <div class="details">
+                <div class="route-info">🚩 起點：民宿拿行李 (計程車)</div>
+                <div class="info-row"><span class="info-label">航班：</span><span class="info-content">虎航 20:15 起飛。</span></div>
+            </div>
         </div>
     </div>
 </div>
@@ -677,9 +762,7 @@
 
             if (!dateStr || !startStr) return;
 
-            // 建立項目的開始時間物件
             const startTime = new Date(dateStr + 'T' + startStr + ':00');
-            // 如果沒有結束時間，預設為開始時間後 1 小時
             let endTime;
             if (endStr) {
                 endTime = new Date(dateStr + 'T' + endStr + ':00');
@@ -687,20 +770,15 @@
                 endTime = new Date(startTime.getTime() + 60*60*1000);
             }
 
-            // 比較時間
             if (now >= startTime && now <= endTime) {
                 item.classList.add('active-now');
-                // 自動切換到當天的分頁 (如果使用者還沒點其他分頁的話)
-                // 這裡可以選擇是否要自動切換，目前先不強制，避免干擾瀏覽
             } else {
                 item.classList.remove('active-now');
             }
         });
     }
 
-    // 每10秒檢查一次
     setInterval(checkTime, 10000);
-    // 網頁載入時馬上檢查一次
     checkTime();
 </script>
 
