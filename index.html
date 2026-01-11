@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3/23-3/27 濟州島春季獨旅</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --jeju-orange: #FF8C00;
+            --jeju-tangerine: #FFB74D;
+            --ocean-blue: #29B6F6;
+            --cherry-pink: #F48FB1;
+            --bg-color: #FDFCF8;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-sub: #555555;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+            background-image: radial-gradient(#FFB74D 0.5px, transparent 0.5px), radial-gradient(#29B6F6 0.5px, #FDFCF8 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #fff 0%, #fff5e6 100%);
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            color: var(--jeju-orange);
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            color: var(--text-sub);
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 25px;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+        }
+
+        .tab-btn {
+            background: white;
+            border: 1px solid var(--jeju-tangerine);
+            color: var(--text-sub);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            font-size: 0.9rem;
+        }
+
+        .tab-btn.active {
+            background: var(--jeju-orange);
+            color: white;
+            border-color: var(--jeju-orange);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 140, 0, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Timeline Items */
+        .timeline-item {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--jeju-tangerine);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .timeline-item:hover {
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .time {
+            background: var(--jeju-tangerine);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        .title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .nav-btn {
+            text-decoration: none;
+            background: #03C75A;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-btn:hover {
+            background: #02b150;
+        }
+
+        .tags {
+            margin-bottom: 8px;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 4px;
+            background: #eee;
+            color: #555;
+        }
+        
+        .tag.food { background: #FFF3E0; color: #E65100; }
+        .tag.spot { background: #E1F5FE; color: #0277BD; }
+        .tag.must { background: #FFEBEE; color: #C62828; }
+
+        /* The expandable detail section */
+        .details {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            background-color: #fafafa;
+            border-radius: 8px;
+            margin-top: 0;
+        }
+
+        .timeline-item:hover .details {
+            max-height: 500px;
+            opacity: 1;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #eee;
+        }
+
+        .info-row {
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            line-height: 1.4;
+            display: flex;
+        }
+
+        .info-label {
+            min-width: 70px;
+            font-weight: bold;
+            color: var(--jeju-orange);
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        /* Day Colors */
+        #day1 .timeline-item { border-left-color: #78909C; }
+        #day2 .timeline-item { border-left-color: var(--ocean-blue); }
+        #day3 .timeline-item { border-left-color: var(--jeju-orange); }
+        #day4 .timeline-item { border-left-color: #8D6E63; }
+        #day5 .timeline-item { border-left-color: var(--cherry-pink); }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🍊 濟州島春季獨旅</h1>
+        <div class="subtitle">3/23 (一) - 3/27 (五) | 完整行程表</div>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openDay(event, 'day1')">3/23 抵達</button>
+        <button class="tab-btn" onclick="openDay(event, 'day2')">3/24 西部</button>
+        <button class="tab-btn" onclick="openDay(event, 'day3')">3/25 南部</button>
+        <button class="tab-btn" onclick="openDay(event, 'day4')">3/26 東部</button>
+        <button class="tab-btn" onclick="openDay(event, 'day5')">3/27 賞櫻</button>
+    </div>
+
+    <div id="day1" class="tab-content active">
+        <div class="timeline-item">
+            <div class="time">19:00</div>
+            <div class="title-row">
+                <span class="title">濟州國際機場</span>
+                <a href="https://map.naver.com/p/search/제주국제공항" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag spot">抵達</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">行程：</span><span class="info-content">搭乘 台灣虎航 抵達</span></div>
+                <div class="info-row"><span class="info-label">交通：</span><span class="info-content">出關後搭計程車前往民宿</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">19:40</div>
+            <div class="title-row">
+                <span class="title">民宿 Check-in</span>
+                <a href="https://map.naver.com/p/search/예스준게스트하우스" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag spot">住宿</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">地點：</span><span class="info-content">濟州機場民宿 Yes Jun</span></div>
+                <div class="info-row"><span class="info-label">備註：</span><span class="info-content">放好行李</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">20:30</div>
+            <div class="title-row">
+                <span class="title">晚餐：連洞商圈</span>
+                <a href="https://map.naver.com/p/search/연동 88돼지" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag food">晚餐</span><span class="tag must">推薦</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">推薦：</span><span class="info-content">88豬 - 黑豬肉定食 / 湯飯</span></div>
+                <div class="info-row"><span class="info-label">備註：</span><span class="info-content">若想吃烤肉建議去88豬點2人份；或改吃雪濃湯等單人友善料理</span></div>
+                <div class="info-row"><span class="info-label">費用：</span><span class="info-content">餐費依點餐</span></div>
+                <div class="info-row"><span class="info-label">交通：</span><span class="info-content">搭計程車/公車至市區</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">21:30</div>
+            <div class="title-row">
+                <span class="title">市區散步</span>
+            </div>
+            <div class="tags"><span class="tag spot">放鬆</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">活動：</span><span class="info-content">逛便利商店、買香蕉牛奶，感受夜晚氛圍</span></div>
+                <div class="info-row"><span class="info-label">門票：</span><span class="info-content">免費</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="day2" class="tab-content">
+        <div class="timeline-item">
+            <div class="time">08:30</div>
+            <div class="title-row"><span class="title">早餐</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">地點：</span><span class="info-content">民宿內或附近超商簡單解決</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">09:30</div>
+            <div class="title-row">
+                <span class="title">漢潭海岸步道</span>
+                <a href="https://map.naver.com/p/search/한담해안산책로" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag spot">指定</span><span class="tag spot">海景</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">絕美海景散步路</span></div>
+                <div class="info-row"><span class="info-label">交通：</span><span class="info-content">搭 202號 公車 (西向)</span></div>
+                <div class="info-row"><span class="info-label">門票：</span><span class="info-content">免費</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">11:00</div>
+            <div class="title-row">
+                <span class="title">Haejigae 咖啡廳</span>
+                <a href="https://map.naver.com/p/search/해지개" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag food">指定</span><span class="tag spot">韓屋</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">特色：</span><span class="info-content">韓屋風格海景咖啡，適合獨自看海放空</span></div>
+                <div class="info-row"><span class="info-label">位置：</span><span class="info-content">位於步道旁</span></div>
+                <div class="info-row"><span class="info-label">費用：</span><span class="info-content">低消飲品</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">12:30</div>
+            <div class="title-row">
+                <span class="title">午餐：Nolman</span>
+                <a href="https://map.naver.com/p/search/놀맨" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag food">必吃</span><span class="tag food">拉麵</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">海鮮拉麵 (螃蟹/淡菜) 一人份OK</span></div>
+                <div class="info-row"><span class="info-label">備註：</span><span class="info-content">需現場排隊點餐</span></div>
+                <div class="info-row"><span class="info-label">費用：</span><span class="info-content">約 ₩10,000</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">14:00</div>
+            <div class="title-row">
+                <span class="title">House of Records</span>
+                <a href="https://map.naver.com/p/search/하우스오브레코드" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag food">指定</span><span class="tag food">甜點</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">蛋塔、玉米塔</span></div>
+                <div class="info-row"><span class="info-label">備註：</span><span class="info-content">13:00才開門</span></div>
+                <div class="info-row"><span class="info-label">交通：</span><span class="info-content">搭202往翰林方向</span></div>
+                <div class="info-row"><span class="info-label">費用：</span><span class="info-content">餐費依點餐</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">16:00</div>
+            <div class="title-row">
+                <span class="title">Siso Kaymak</span>
+                <a href="https://map.naver.com/p/search/시소카이막" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag food">指定</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">土耳其奶油專賣 (Kaymak + 法棍麵包)</span></div>
+                <div class="info-row"><span class="info-label">位置：</span><span class="info-content">位於翰林邑</span></div>
+                <div class="info-row"><span class="info-label">費用：</span><span class="info-content">餐費依點餐</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">17:30</div>
+            <div class="title-row">
+                <span class="title">挾才海水浴場</span>
+                <a href="https://map.naver.com/p/search/협재해수욕장" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag spot">自然</span><span class="tag spot">夕陽</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">活動：</span><span class="info-content">欣賞飛揚島景色與夕陽</span></div>
+                <div class="info-row"><span class="info-label">位置：</span><span class="info-content">就在附近</span></div>
+                <div class="info-row"><span class="info-label">門票：</span><span class="info-content">免費</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">18:30</div>
+            <div class="title-row">
+                <span class="title">晚餐：挾才秀烏龍麵</span>
+                <a href="https://map.naver.com/p/search/협재수우동" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag food">必吃</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">炸豬排烏龍麵、鮑魚拌飯 (一人份OK)</span></div>
+                <div class="info-row"><span class="info-label">位置：</span><span class="info-content">挾才海邊附近</span></div>
+                <div class="info-row"><span class="info-label">費用：</span><span class="info-content">約 ₩15,000</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">20:00</div>
+            <div class="title-row">
+                <span class="title">返回民宿</span>
+            </div>
+            <div class="tags"><span class="tag spot">交通</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">交通：</span><span class="info-content">搭 202號 返回市區</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="day3" class="tab-content">
+        <div class="timeline-item">
+            <div class="time">08:30</div>
+            <div class="title-row"><span class="title">早餐</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">備註：</span><span class="info-content">簡單解決，準備搭長途急行巴士</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">10:30</div>
+            <div class="title-row">
+                <span class="title">橘花閣樓</span>
+                <a href="https://map.naver.com/p/search/귤꽃다락" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag spot">指定</span><span class="tag food">咖啡</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">特色：</span><span class="info-content">復古橘子倉庫咖啡廳 [韓劇感] 適合拍照</span></div>
+                <div class="info-row"><span class="info-label">交通：</span><span class="info-content">搭 181/182號 急行巴士</span></div>
+                <div class="info-row"><span class="info-label">費用：</span><span class="info-content">低消飲品</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">12:30</div>
+            <div class="title-row">
+                <span class="title">午餐：西歸浦市場</span>
+                <a href="https://map.naver.com/p/search/서귀포매일올레시장" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag food">指定</span><span class="tag food">小吃</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">巡禮：</span><span class="info-content">1. 橘子大福 2. 黑豬肉可樂餅</span></div>
+                <div class="info-row"><span class="info-label">備註：</span><span class="info-content">一人邊走邊吃最方便</span></div>
+                <div class="info-row"><span class="info-label">位置：</span><span class="info-content">西歸浦市區中心</span></div>
+                <div class="info-row"><span class="info-label">費用：</span><span class="info-content">免費入場，餐費自理</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">14:30</div>
+            <div class="title-row">
+                <span class="title">李仲燮文化街</span>
+                <a href="https://map.naver.com/p/search/이중섭거리" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag spot">歷史</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">活動：</span><span class="info-content">參觀畫家避難茅草屋</span></div>
+                <div class="info-row"><span class="info-label">交通：</span><span class="info-content">步行可達</span></div>
+                <div class="info-row"><span class="info-label">門票：</span><span class="info-content">街區免費，美術館₩1,500</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">16:00</div>
+            <div class="title-row">
+                <span class="title">正房瀑布</span>
+                <a href="https://map.naver.com/p/search/정방폭포" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag spot">自然</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">亞洲唯一直接入海的瀑布，壯觀自然景觀</span></div>
+                <div class="info-row"><span class="info-label">門票：</span><span class="info-content">₩2,000</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">18:00</div>
+            <div class="title-row">
+                <span class="title">晚餐：珍珠食堂</span>
+                <a href="https://map.naver.com/p/search/진주식당" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag food">獨食</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">鮑魚海鮮砂鍋 (Jeonbok Ttukbaegi)</span></div>
+                <div class="info-row"><span class="info-label">備註：</span><span class="info-content">一人份陶鍋，含小菜，超適合獨旅</span></div>
+                <div class="info-row"><span class="info-label">位置：</span><span class="info-content">西歸浦市區 (近正房瀑布)</span></div>
+                <div class="info-row"><span class="info-label">費用：</span><span class="info-content">約 ₩16,000</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">20:00</div>
+            <div class="title-row">
+                <span class="title">返回民宿</span>
+            </div>
+            <div class="tags"><span class="tag spot">交通</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">交通：</span><span class="info-content">搭 181/182號 返回濟州市</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="day4" class="tab-content">
+        <div class="timeline-item">
+            <div class="time">08:30</div>
+            <div class="title-row"><span class="title">早餐</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">備註：</span><span class="info-content">簡單解決</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">09:30</div>
+            <div class="title-row">
+                <span class="title">鹿山路</span>
+                <a href="https://map.naver.com/p/search/녹산로유채꽃도로" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag spot">最美公路</span><span class="tag spot">花</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">櫻花 + 油菜花隧道</span></div>
+                <div class="info-row"><span class="info-label">交通：</span><span class="info-content">公車到加時里後，轉計程車進去</span></div>
+                <div class="info-row"><span class="info-label">門票：</span><span class="info-content">免費</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">12:30</div>
+            <div class="title-row">
+                <span class="title">午餐：加時里食堂</span>
+                <a href="https://map.naver.com/p/search/가시식당" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag food">必吃</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">濟州式辣炒豬肉</span></div>
+                <div class="info-row"><span class="info-label">備註：</span><span class="info-content">若規定2人份，可點2份打包；或改點純肉湯飯</span></div>
+                <div class="info-row"><span class="info-label">位置：</span><span class="info-content">位於加時里村莊內</span></div>
+                <div class="info-row"><span class="info-label">費用：</span><span class="info-content">約 ₩10,000</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">14:30</div>
+            <div class="title-row">
+                <span class="title">城邑民俗村</span>
+                <a href="https://map.naver.com/p/search/성읍민속마을" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag spot">歷史</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">古代茅草屋村落，園區內有居民</span></div>
+                <div class="info-row"><span class="info-label">門票：</span><span class="info-content">免費</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">16:30</div>
+            <div class="title-row">
+                <span class="title">涉地可支</span>
+                <a href="https://map.naver.com/p/search/섭지코지" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag spot">自然</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">海岸懸崖、油菜花田，適合使用自拍棒</span></div>
+                <div class="info-row"><span class="info-label">門票：</span><span class="info-content">免費</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">19:00</div>
+            <div class="title-row">
+                <span class="title">晚餐：東門市場夜市</span>
+                <a href="https://map.naver.com/p/search/동문재래시장야시장" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag food">夜市</span><span class="tag must">必吃</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">鮑魚紫菜飯捲、烤龍蝦</span></div>
+                <div class="info-row"><span class="info-label">備註：</span><span class="info-content">一人份友善</span></div>
+                <div class="info-row"><span class="info-label">位置：</span><span class="info-content">返回濟州市區</span></div>
+                <div class="info-row"><span class="info-label">費用：</span><span class="info-content">免費入場，餐費自理</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="day5" class="tab-content">
+        <div class="timeline-item">
+            <div class="time">09:30</div>
+            <div class="title-row">
+                <span class="title">三姓穴</span>
+                <a href="https://map.naver.com/p/search/삼성혈" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag spot">歷史</span><span class="tag spot">賞櫻</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">神話發源地</span></div>
+                <div class="info-row"><span class="info-label">位置：</span><span class="info-content">離民宿不遠</span></div>
+                <div class="info-row"><span class="info-label">門票：</span><span class="info-content">₩4,000</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">11:00</div>
+            <div class="title-row">
+                <span class="title">典農路櫻花大道</span>
+                <a href="https://map.naver.com/p/search/전농로벚꽃거리" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag spot">賞櫻</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">濟州市區最著名賞櫻路</span></div>
+                <div class="info-row"><span class="info-label">交通：</span><span class="info-content">步行可達</span></div>
+                <div class="info-row"><span class="info-label">門票：</span><span class="info-content">免費</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">12:30</div>
+            <div class="title-row">
+                <span class="title">午餐：姊妹麵條</span>
+                <a href="https://map.naver.com/p/search/자매국수" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag food">必吃</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">豬肉湯麵 (一人份OK)</span></div>
+                <div class="info-row"><span class="info-label">位置：</span><span class="info-content">麵條文化街</span></div>
+                <div class="info-row"><span class="info-label">費用：</span><span class="info-content">約 ₩10,000</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">14:00</div>
+            <div class="title-row">
+                <span class="title">龍頭岩 & 龍淵雲橋</span>
+                <a href="https://map.naver.com/p/search/용두암" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag spot">地標</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">離民宿很近的海岸地標</span></div>
+                <div class="info-row"><span class="info-label">交通：</span><span class="info-content">步行或短程計程車</span></div>
+                <div class="info-row"><span class="info-label">門票：</span><span class="info-content">免費</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">15:30</div>
+            <div class="title-row">
+                <span class="title">道頭洞彩虹海岸道路</span>
+                <a href="https://map.naver.com/p/search/도두동무지개해안도로" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag spot">新地標</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">彩虹石墩 + 飛機，適合最後拍照</span></div>
+                <div class="info-row"><span class="info-label">門票：</span><span class="info-content">免費</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">16:30</div>
+            <div class="title-row">
+                <span class="title">梨湖木馬燈塔</span>
+                <a href="https://map.naver.com/p/search/이호테우말등대" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag spot">地標</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">紅/白馬型燈塔</span></div>
+                <div class="info-row"><span class="info-label">位置：</span><span class="info-content">就在彩虹道路旁</span></div>
+                <div class="info-row"><span class="info-label">門票：</span><span class="info-content">免費</span></div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="time">18:00</div>
+            <div class="title-row">
+                <span class="title">前往機場</span>
+                <a href="https://map.naver.com/p/search/제주국제공항" target="_blank" class="nav-btn">📍 導航</a>
+            </div>
+            <div class="tags"><span class="tag spot">回程</span></div>
+            <div class="details">
+                <div class="info-row"><span class="info-label">重點：</span><span class="info-content">搭乘 虎航 20:15 起飛</span></div>
+                <div class="info-row"><span class="info-label">交通：</span><span class="info-content">從民宿拿行李去機場 (建議提早2小時抵達)</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openDay(evt, dayName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].classList.remove("active");
+        }
+        tablinks = document.getElementsByClassName("tab-btn");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+        document.getElementById(dayName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+</script>
+
+</body>
+</html>
