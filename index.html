@@ -5,12 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3/23-3/27 濟州島春季獨旅</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
     <style>
         :root {
             --jeju-orange: #FF8C00;
             --jeju-tangerine: #FFB74D;
             --ocean-blue: #29B6F6;
             --cherry-pink: #F48FB1;
+            --forest-green: #66BB6A;
+            --night-dark: #546E7A;
             --bg-color: #FDFCF8;
             --card-bg: #FFFFFF;
             --text-main: #333333;
@@ -33,7 +37,7 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            padding-bottom: 80px;
+            padding-bottom: 40px;
         }
 
         header {
@@ -81,7 +85,6 @@
             box-shadow: 0 4px 8px rgba(255, 140, 0, 0.3);
         }
 
-        /* Warm Title inside Tab */
         .warm-title {
             text-align: center;
             font-size: 1.1rem;
@@ -108,9 +111,16 @@
             border-left: 5px solid var(--jeju-tangerine);
             transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
+            cursor: pointer; /* Hint that it's clickable/hoverable */
         }
 
-        /* Active Now Effect (Glowing) */
+        .timeline-item:hover {
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background-color: #FFFDF5; /* Slight highlight */
+        }
+
+        /* Active Now Effect */
         @keyframes glowing {
             0% { box-shadow: 0 0 5px #FF8C00, 0 0 10px #FF8C00; border-color: #FF8C00; }
             50% { box-shadow: 0 0 20px #FF8C00, 0 0 30px #FFB74D; border-color: #FF8C00; }
@@ -134,10 +144,7 @@
             vertical-align: middle;
             font-weight: bold;
         }
-
-        .timeline-item.active-now .active-badge {
-            display: inline-block;
-        }
+        .timeline-item.active-now .active-badge { display: inline-block; }
 
         .time-badge {
             background: var(--jeju-tangerine);
@@ -150,11 +157,10 @@
             margin-bottom: 5px;
         }
 
-        /* Modified Header Row for Right Alignment */
         .header-row {
             display: flex;
-            align-items: center; /* 垂直置中 */
-            flex-wrap: wrap;     /* 允許換行 */
+            align-items: center;
+            flex-wrap: wrap;
             gap: 10px;
             margin-bottom: 5px;
         }
@@ -166,12 +172,7 @@
             margin-right: 5px; 
         }
 
-        .btn-group {
-            display: flex;
-            gap: 5px;
-            /* 強制靠右 */
-            margin-left: auto; 
-        }
+        .btn-group { display: flex; gap: 5px; margin-left: auto; }
 
         .nav-btn {
             text-decoration: none;
@@ -184,7 +185,6 @@
             transition: background 0.2s;
             white-space: nowrap;
         }
-
         .nav-btn.primary { background: var(--naver-green); color: white; }
         .nav-btn.primary:hover { background: #02b150; }
         .nav-btn.secondary { background: #EFF1F4; color: #333; border: 1px solid #ddd; }
@@ -207,23 +207,33 @@
         .info-row { font-size: 0.9rem; margin-bottom: 6px; line-height: 1.5; display: flex; }
         .info-label { min-width: 60px; font-weight: bold; color: var(--jeju-orange); }
         .info-content { flex: 1; }
-        
-        .route-info { 
-            background-color: #E8F5E9; 
-            color: #2E7D32; 
-            padding: 4px 8px; 
-            border-radius: 4px; 
-            font-size: 0.85rem; 
-            margin-bottom: 8px; 
-            display: inline-block; 
-            width: 100%; 
-            box-sizing: border-box; 
+        .route-info { background-color: #E8F5E9; color: #2E7D32; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 8px; display: inline-block; width: 100%; box-sizing: border-box; }
+
+        /* Map Container */
+        #map-container {
+            margin-top: 40px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 5px solid white;
+        }
+        #map {
+            height: 400px;
+            width: 100%;
+            z-index: 1; /* Ensure map stays below tabs if sticky */
+        }
+        .map-title {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--jeju-orange);
+            font-weight: bold;
         }
 
-        #day1 .timeline-item { border-left-color: #78909C; }
+        /* Day Colors */
+        #day1 .timeline-item { border-left-color: var(--night-dark); }
         #day2 .timeline-item { border-left-color: var(--ocean-blue); }
         #day3 .timeline-item { border-left-color: var(--jeju-orange); }
-        #day4 .timeline-item { border-left-color: #8D6E63; }
+        #day4 .timeline-item { border-left-color: var(--forest-green); }
         #day5 .timeline-item { border-left-color: var(--cherry-pink); }
     </style>
 </head>
@@ -236,17 +246,17 @@
     </header>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="openDay(event, 'day1')">3/23 抵達</button>
-        <button class="tab-btn" onclick="openDay(event, 'day2')">3/24 西部</button>
-        <button class="tab-btn" onclick="openDay(event, 'day3')">3/25 南部</button>
-        <button class="tab-btn" onclick="openDay(event, 'day4')">3/26 東部</button>
-        <button class="tab-btn" onclick="openDay(event, 'day5')">3/27 賞櫻</button>
+        <button class="tab-btn active" onclick="openDay(event, 'day1', '#546E7A')">3/23 抵達</button>
+        <button class="tab-btn" onclick="openDay(event, 'day2', '#29B6F6')">3/24 西部</button>
+        <button class="tab-btn" onclick="openDay(event, 'day3', '#FF8C00')">3/25 南部</button>
+        <button class="tab-btn" onclick="openDay(event, 'day4', '#66BB6A')">3/26 東部</button>
+        <button class="tab-btn" onclick="openDay(event, 'day5', '#F48FB1')">3/27 賞櫻</button>
     </div>
 
     <div id="day1" class="tab-content active">
         <div class="warm-title">✨ 初見濟州，夜晚的微光</div>
 
-        <div class="timeline-item" data-date="2026-03-23" data-start="19:00" data-end="19:40">
+        <div class="timeline-item" data-date="2026-03-23" data-start="19:00" data-end="19:40" data-lat="33.5104" data-lng="126.4913" data-name="濟州國際機場">
             <div class="time-badge">19:00 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">濟州國際機場</span>
@@ -256,7 +266,7 @@
             <div class="details"><div class="info-row"><span class="info-label">行程：</span><span class="info-content">台灣虎航抵達，出關後搭計程車。</span></div></div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-23" data-start="19:40" data-end="20:30">
+        <div class="timeline-item" data-date="2026-03-23" data-start="19:40" data-end="20:30" data-lat="33.5045" data-lng="126.4547" data-name="民宿 Yes Jun">
             <div class="time-badge">19:40 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">民宿 Check-in</span>
@@ -269,11 +279,11 @@
             <div class="details">
                 <div class="route-info">🚩 起點：濟州機場</div>
                 <div class="info-row"><span class="info-label">交通：</span><span class="info-content">建議搭計程車；或公車 315/325/365/466 號。</span></div>
-                <div class="info-row"><span class="info-label">地點：</span><span class="info-content">濟州機場民宿 Yes Jun</span></div>
+                <div class="info-row"><span class="info-label">地點：</span><span class="info-content">濟州機場民宿 Yes Jun (Dodu-dong)</span></div>
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-23" data-start="20:30" data-end="21:30">
+        <div class="timeline-item" data-date="2026-03-23" data-start="20:30" data-end="21:30" data-lat="33.4850" data-lng="126.4920" data-name="連洞 88豬">
             <div class="time-badge">20:30 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">晚餐：連洞商圈</span>
@@ -289,28 +299,18 @@
                 <div class="info-row"><span class="info-label">推薦：</span><span class="info-content">88豬 - 黑豬肉定食 / 湯飯。</span></div>
             </div>
         </div>
-
-        <div class="timeline-item" data-date="2026-03-23" data-start="21:30" data-end="23:00">
-            <div class="time-badge">21:30 <span class="active-badge">🔥 進行中</span></div>
-            <div class="header-row"><span class="title">市區散步</span></div>
-            <div class="tags"><span class="tag spot">放鬆</span></div>
-            <div class="details">
-                <div class="route-info">🚩 起點：連洞商圈 (步行)</div>
-                <div class="info-row"><span class="info-label">活動：</span><span class="info-content">逛便利商店、買香蕉牛奶。</span></div>
-            </div>
-        </div>
     </div>
 
     <div id="day2" class="tab-content">
         <div class="warm-title">🌊 海風與夕陽的溫柔擁抱</div>
 
-        <div class="timeline-item" data-date="2026-03-24" data-start="08:30" data-end="09:30">
-            <div class="time-badge">08:30 <span class="active-badge">🔥 進行中</span></div>
-            <div class="header-row"><span class="title">早餐</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">地點：</span><span class="info-content">民宿內或附近超商簡單解決。</span></div></div>
+        <div class="timeline-item" data-date="2026-03-24" data-start="08:10" data-end="09:20" data-lat="33.5045" data-lng="126.4547" data-name="民宿出發">
+            <div class="time-badge">08:10 <span class="active-badge">🔥 進行中</span></div>
+            <div class="header-row"><span class="title">出門 (提早出發)</span></div>
+            <div class="details"><div class="info-row"><span class="info-label">備註：</span><span class="info-content">為避免遲到，建議 08:10 出門搭車。</span></div></div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-24" data-start="09:30" data-end="11:00">
+        <div class="timeline-item" data-date="2026-03-24" data-start="09:30" data-end="11:00" data-lat="33.4627" data-lng="126.3113" data-name="漢潭海岸步道">
             <div class="time-badge">09:30 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">漢潭海岸步道</span>
@@ -327,7 +327,7 @@
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-24" data-start="11:00" data-end="12:30">
+        <div class="timeline-item" data-date="2026-03-24" data-start="11:00" data-end="12:30" data-lat="33.4625" data-lng="126.3115" data-name="Haejigae 咖啡">
             <div class="time-badge">11:00 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">Haejigae 咖啡廳</span>
@@ -343,7 +343,7 @@
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-24" data-start="12:30" data-end="14:00">
+        <div class="timeline-item" data-date="2026-03-24" data-start="12:30" data-end="14:00" data-lat="33.4619" data-lng="126.3106" data-name="Nolman 拉麵">
             <div class="time-badge">12:30 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">午餐：Nolman</span>
@@ -359,7 +359,7 @@
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-24" data-start="14:00" data-end="16:00">
+        <div class="timeline-item" data-date="2026-03-24" data-start="14:00" data-end="16:00" data-lat="33.4140" data-lng="126.2620" data-name="House of Records">
             <div class="time-badge">14:00 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">House of Records</span>
@@ -376,7 +376,7 @@
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-24" data-start="16:00" data-end="17:30">
+        <div class="timeline-item" data-date="2026-03-24" data-start="16:00" data-end="17:30" data-lat="33.3967" data-lng="126.2393" data-name="Siso Kaymak">
             <div class="time-badge">16:00 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">Siso Kaymak</span>
@@ -388,11 +388,11 @@
             <div class="tags"><span class="tag food">指定</span></div>
             <div class="details">
                 <div class="route-info">🚩 起點：翰林邑 (步行/短程)</div>
-                <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">土耳其奶油 (Kaymak)。</span></div>
+                <div class="info-row"><span class="info-label">備註：</span><span class="info-content">外帶店，買完去海邊吃。</span></div>
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-24" data-start="17:30" data-end="18:30">
+        <div class="timeline-item" data-date="2026-03-24" data-start="17:30" data-end="18:30" data-lat="33.3938" data-lng="126.2394" data-name="挾才海水浴場">
             <div class="time-badge">17:30 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">挾才海水浴場</span>
@@ -404,11 +404,11 @@
             <div class="tags"><span class="tag spot">夕陽</span></div>
             <div class="details">
                 <div class="route-info">🚩 起點：Siso 附近 (步行)</div>
-                <div class="info-row"><span class="info-label">活動：</span><span class="info-content">欣賞飛揚島景色與夕陽。</span></div>
+                <div class="info-row"><span class="info-label">活動：</span><span class="info-content">吃 Kaymak，欣賞飛揚島景色與夕陽。</span></div>
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-24" data-start="18:30" data-end="20:00">
+        <div class="timeline-item" data-date="2026-03-24" data-start="18:30" data-end="20:00" data-lat="33.3945" data-lng="126.2390" data-name="挾才秀烏龍麵">
             <div class="time-badge">18:30 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">晚餐：挾才秀烏龍麵</span>
@@ -423,25 +423,12 @@
                 <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">炸豬排烏龍麵、鮑魚拌飯。</span></div>
             </div>
         </div>
-
-        <div class="timeline-item" data-date="2026-03-24" data-start="20:00" data-end="21:30">
-            <div class="time-badge">20:00 <span class="active-badge">🔥 進行中</span></div>
-            <div class="header-row"><span class="title">返回民宿</span></div>
-            <div class="tags"><span class="tag spot">交通</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">交通：</span><span class="info-content">搭 202號 返回市區。</span></div></div>
-        </div>
     </div>
 
     <div id="day3" class="tab-content">
         <div class="warm-title">🍊 橘香瀰漫的復古時光</div>
 
-        <div class="timeline-item" data-date="2026-03-25" data-start="08:30" data-end="10:30">
-            <div class="time-badge">08:30 <span class="active-badge">🔥 進行中</span></div>
-            <div class="header-row"><span class="title">早餐 & 移動</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">備註：</span><span class="info-content">簡單解決，搭長途急行巴士。</span></div></div>
-        </div>
-
-        <div class="timeline-item" data-date="2026-03-25" data-start="10:30" data-end="12:30">
+        <div class="timeline-item" data-date="2026-03-25" data-start="10:30" data-end="12:30" data-lat="33.2670" data-lng="126.5400" data-name="橘花閣樓">
             <div class="time-badge">10:30 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">橘花閣樓</span>
@@ -453,11 +440,11 @@
             <div class="tags"><span class="tag spot">咖啡</span></div>
             <div class="details">
                 <div class="route-info">🚩 起點：民宿 (搭181/182號巴士)</div>
-                <div class="info-row"><span class="info-label">特色：</span><span class="info-content">復古橘子倉庫咖啡廳。</span></div>
+                <div class="info-row"><span class="info-label">策略：</span><span class="info-content">10:30先拍照，11:00開店準時入場。</span></div>
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-25" data-start="12:30" data-end="14:30">
+        <div class="timeline-item" data-date="2026-03-25" data-start="12:30" data-end="14:30" data-lat="33.2497" data-lng="126.5636" data-name="西歸浦偶來市場">
             <div class="time-badge">12:30 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">午餐：西歸浦市場</span>
@@ -474,7 +461,7 @@
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-25" data-start="14:30" data-end="16:00">
+        <div class="timeline-item" data-date="2026-03-25" data-start="14:30" data-end="16:00" data-lat="33.2476" data-lng="126.5647" data-name="李仲燮文化街">
             <div class="time-badge">14:30 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">李仲燮文化街</span>
@@ -490,7 +477,7 @@
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-25" data-start="16:00" data-end="18:00">
+        <div class="timeline-item" data-date="2026-03-25" data-start="16:00" data-end="18:00" data-lat="33.2448" data-lng="126.5714" data-name="正房瀑布">
             <div class="time-badge">16:00 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">正房瀑布</span>
@@ -506,7 +493,7 @@
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-25" data-start="18:00" data-end="20:00">
+        <div class="timeline-item" data-date="2026-03-25" data-start="18:00" data-end="20:00" data-lat="33.2460" data-lng="126.5690" data-name="珍珠食堂">
             <div class="time-badge">18:00 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">晚餐：珍珠食堂</span>
@@ -521,26 +508,22 @@
                 <div class="info-row"><span class="info-label">必吃：</span><span class="info-content">鮑魚海鮮砂鍋。</span></div>
             </div>
         </div>
-
-        <div class="timeline-item" data-date="2026-03-25" data-start="20:00" data-end="22:00">
-            <div class="time-badge">20:00 <span class="active-badge">🔥 進行中</span></div>
-            <div class="header-row"><span class="title">返回民宿</span></div>
-            <div class="tags"><span class="tag spot">交通</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">交通：</span><span class="info-content">搭 181/182號 返回濟州市。</span></div></div>
-        </div>
     </div>
 
     <div id="day4" class="tab-content">
         <div class="warm-title">🌼 漫步在春日花海與古村</div>
-
-        <div class="timeline-item" data-date="2026-03-26" data-start="08:30" data-end="09:30">
-            <div class="time-badge">08:30 <span class="active-badge">🔥 進行中</span></div>
-            <div class="header-row"><span class="title">早餐</span></div>
-            <div class="details"><div class="info-row"><span class="info-label">備註：</span><span class="info-content">簡單解決。</span></div></div>
+        
+        <div class="timeline-item" data-date="2026-03-26" data-start="08:00" data-end="09:40" data-lat="33.5045" data-lng="126.4547" data-name="民宿出發">
+            <div class="time-badge">08:00 <span class="active-badge">🔥 進行中</span></div>
+            <div class="header-row"><span class="title">提早出門 (交通攻略)</span></div>
+            <div class="details">
+                <div class="route-info">建議：計程車→巴士總站→大川轉運站→計程車→鹿山路</div>
+                <div class="info-row"><span class="info-label">備註：</span><span class="info-content">全程公車會花 3.5小時，請務必按照攻略轉乘計程車。</span></div>
+            </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-26" data-start="09:30" data-end="12:30">
-            <div class="time-badge">09:30 <span class="active-badge">🔥 進行中</span></div>
+        <div class="timeline-item" data-date="2026-03-26" data-start="09:40" data-end="12:30" data-lat="33.3900" data-lng="126.7200" data-name="鹿山路">
+            <div class="time-badge">09:40 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">鹿山路 (最美公路)</span>
                 <div class="btn-group">
@@ -551,12 +534,11 @@
             <div class="tags"><span class="tag spot">櫻花</span></div>
             <div class="details">
                 <div class="route-info">🚩 起點：民宿</div>
-                <div class="info-row"><span class="info-label">交通：</span><span class="info-content">搭公車 221/222 號到加時里，轉計程車進去。</span></div>
                 <div class="info-row"><span class="info-label">重點：</span><span class="info-content">櫻花 + 油菜花隧道。</span></div>
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-26" data-start="12:30" data-end="14:30">
+        <div class="timeline-item" data-date="2026-03-26" data-start="12:30" data-end="14:30" data-lat="33.3540" data-lng="126.7720" data-name="加時里食堂">
             <div class="time-badge">12:30 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">午餐：加時里食堂</span>
@@ -572,7 +554,7 @@
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-26" data-start="14:30" data-end="16:30">
+        <div class="timeline-item" data-date="2026-03-26" data-start="14:30" data-end="16:30" data-lat="33.3860" data-lng="126.7990" data-name="城邑民俗村">
             <div class="time-badge">14:30 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">城邑民俗村</span>
@@ -589,7 +571,7 @@
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-26" data-start="16:30" data-end="19:00">
+        <div class="timeline-item" data-date="2026-03-26" data-start="16:30" data-end="19:30" data-lat="33.4230" data-lng="126.9290" data-name="涉地可支">
             <div class="time-badge">16:30 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">涉地可支</span>
@@ -602,11 +584,12 @@
             <div class="details">
                 <div class="route-info">🚩 起點：民俗村 (計程車建議)</div>
                 <div class="info-row"><span class="info-label">重點：</span><span class="info-content">海岸懸崖、油菜花田。</span></div>
+                <div class="info-row"><span class="info-label">注意：</span><span class="info-content">回程較遠，建議 17:30 離開。</span></div>
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-26" data-start="19:00" data-end="21:00">
-            <div class="time-badge">19:00 <span class="active-badge">🔥 進行中</span></div>
+        <div class="timeline-item" data-date="2026-03-26" data-start="19:30" data-end="21:00" data-lat="33.5120" data-lng="126.5280" data-name="東門市場夜市">
+            <div class="time-badge">19:30 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">晚餐：東門市場夜市</span>
                 <div class="btn-group">
@@ -626,7 +609,7 @@
     <div id="day5" class="tab-content">
         <div class="warm-title">🌸 櫻花樹下的最後留影</div>
 
-        <div class="timeline-item" data-date="2026-03-27" data-start="09:30" data-end="11:00">
+        <div class="timeline-item" data-date="2026-03-27" data-start="09:30" data-end="11:00" data-lat="33.5040" data-lng="126.5300" data-name="三姓穴">
             <div class="time-badge">09:30 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">三姓穴</span>
@@ -642,7 +625,7 @@
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-27" data-start="11:00" data-end="12:30">
+        <div class="timeline-item" data-date="2026-03-27" data-start="11:00" data-end="12:30" data-lat="33.5000" data-lng="126.5180" data-name="典農路櫻花">
             <div class="time-badge">11:00 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">典農路櫻花大道</span>
@@ -658,7 +641,7 @@
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-27" data-start="12:30" data-end="14:00">
+        <div class="timeline-item" data-date="2026-03-27" data-start="12:30" data-end="14:00" data-lat="33.5050" data-lng="126.5350" data-name="姊妹麵條">
             <div class="time-badge">12:30 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">午餐：姊妹麵條</span>
@@ -674,7 +657,7 @@
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-27" data-start="14:00" data-end="15:30">
+        <div class="timeline-item" data-date="2026-03-27" data-start="14:00" data-end="15:30" data-lat="33.5160" data-lng="126.5120" data-name="龍頭岩">
             <div class="time-badge">14:00 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">龍頭岩 & 龍淵雲橋</span>
@@ -690,7 +673,7 @@
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-27" data-start="15:30" data-end="16:30">
+        <div class="timeline-item" data-date="2026-03-27" data-start="15:30" data-end="16:30" data-lat="33.5070" data-lng="126.4540" data-name="彩虹海岸道路">
             <div class="time-badge">15:30 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">道頭洞彩虹海岸</span>
@@ -707,7 +690,7 @@
             </div>
         </div>
 
-        <div class="timeline-item" data-date="2026-03-27" data-start="16:30" data-end="18:00">
+        <div class="timeline-item" data-date="2026-03-27" data-start="16:30" data-end="18:00" data-lat="33.4970" data-lng="126.4520" data-name="梨湖木馬燈塔">
             <div class="time-badge">16:30 <span class="active-badge">🔥 進行中</span></div>
             <div class="header-row">
                 <span class="title">梨湖木馬燈塔</span>
@@ -722,27 +705,30 @@
                 <div class="info-row"><span class="info-label">重點：</span><span class="info-content">紅/白馬型燈塔。</span></div>
             </div>
         </div>
-
-        <div class="timeline-item" data-date="2026-03-27" data-start="18:00" data-end="23:00">
-            <div class="time-badge">18:00 <span class="active-badge">🔥 進行中</span></div>
-            <div class="header-row">
-                <span class="title">前往機場</span>
-                <div class="btn-group">
-                    <a href="https://map.naver.com/p/search/예스준게스트하우스에서 제주국제공항 가는길" target="_blank" class="nav-btn secondary">🚗 查路線</a>
-                    <a href="https://map.naver.com/p/search/제주국제공항" target="_blank" class="nav-btn primary">📍 目的地</a>
-                </div>
-            </div>
-            <div class="tags"><span class="tag spot">回程</span></div>
-            <div class="details">
-                <div class="route-info">🚩 起點：民宿拿行李 (計程車)</div>
-                <div class="info-row"><span class="info-label">航班：</span><span class="info-content">虎航 20:15 起飛。</span></div>
-            </div>
-        </div>
     </div>
+    
+    <div id="map-container">
+        <div class="map-title">🗺️ 行程地圖 (點擊標記可導航)</div>
+        <div id="map"></div>
+    </div>
+
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
 <script>
-    function openDay(evt, dayName) {
+    // 1. 初始化地圖
+    var map = L.map('map').setView([33.38, 126.55], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    var markers = [];
+    var polyline = null;
+
+    // 2. 切換日期的功能 (包含地圖更新)
+    function openDay(evt, dayName, colorCode) {
+        // UI 切換
         var i, tabcontent, tablinks;
         tabcontent = document.getElementsByClassName("tab-content");
         for (i = 0; i < tabcontent.length; i++) {
@@ -751,30 +737,82 @@
         tablinks = document.getElementsByClassName("tab-btn");
         for (i = 0; i < tablinks.length; i++) {
             tablinks[i].classList.remove("active");
+            // Reset background colors
+            tablinks[i].style.backgroundColor = 'white';
+            tablinks[i].style.color = '#555';
         }
         document.getElementById(dayName).classList.add("active");
         evt.currentTarget.classList.add("active");
+        
+        // Highlight active tab
+        evt.currentTarget.style.backgroundColor = colorCode;
+        evt.currentTarget.style.color = 'white';
+        evt.currentTarget.style.borderColor = colorCode;
+
+        // 更新地圖
+        updateMap(dayName, colorCode);
     }
 
+    // 3. 更新地圖的核心邏輯
+    function updateMap(dayId, color) {
+        // 清除舊標記
+        markers.forEach(m => map.removeLayer(m));
+        markers = [];
+        if (polyline) map.removeLayer(polyline);
+
+        var latlngs = [];
+        var container = document.getElementById(dayId);
+        var items = container.getElementsByClassName('timeline-item');
+
+        for (var i = 0; i < items.length; i++) {
+            var lat = items[i].getAttribute('data-lat');
+            var lng = items[i].getAttribute('data-lng');
+            var name = items[i].getAttribute('data-name');
+            var navName = items[i].querySelector('.nav-btn.primary')?.getAttribute('href'); 
+            // 嘗試抓取 Naver 連結
+
+            if (lat && lng) {
+                var point = [parseFloat(lat), parseFloat(lng)];
+                latlngs.push(point);
+
+                // 建立 Popup 內容
+                var popupContent = `<b>${name}</b><br>`;
+                if (navName) {
+                    popupContent += `<a href="${navName}" target="_blank" style="display:inline-block;margin-top:5px;background:#03C75A;color:white;padding:4px 8px;border-radius:4px;text-decoration:none;">📍 開啟 Naver 導航</a>`;
+                }
+
+                var marker = L.marker(point).addTo(map);
+                marker.bindPopup(popupContent);
+                markers.push(marker);
+
+                // 讓列表項目滑鼠移過去時，地圖跳出 Popup
+                (function(m) {
+                    items[i].addEventListener('mouseenter', function() {
+                        m.openPopup();
+                    });
+                })(marker);
+            }
+        }
+
+        // 畫連線
+        if (latlngs.length > 0) {
+            polyline = L.polyline(latlngs, {color: color, weight: 4, opacity: 0.7, dashArray: '10, 10'}).addTo(map);
+            // 自動縮放地圖到合適範圍
+            map.fitBounds(polyline.getBounds(), {padding: [50, 50]});
+        }
+    }
+
+    // 4. 自動檢查時間亮燈
     function checkTime() {
         const now = new Date();
         const items = document.querySelectorAll('.timeline-item');
-        
         items.forEach(item => {
             const dateStr = item.getAttribute('data-date');
             const startStr = item.getAttribute('data-start');
             const endStr = item.getAttribute('data-end');
-
             if (!dateStr || !startStr) return;
-
             const startTime = new Date(dateStr + 'T' + startStr + ':00');
-            let endTime;
-            if (endStr) {
-                endTime = new Date(dateStr + 'T' + endStr + ':00');
-            } else {
-                endTime = new Date(startTime.getTime() + 60*60*1000);
-            }
-
+            let endTime = endStr ? new Date(dateStr + 'T' + endStr + ':00') : new Date(startTime.getTime() + 60*60*1000);
             if (now >= startTime && now <= endTime) {
                 item.classList.add('active-now');
             } else {
@@ -782,9 +820,13 @@
             }
         });
     }
-
     setInterval(checkTime, 10000);
     checkTime();
+
+    // 5. 初始載入 Day 1 地圖
+    // 模擬點擊第一天按鈕
+    document.querySelector('.tab-btn.active').click();
+
 </script>
 
 </body>
